@@ -85,5 +85,23 @@ class GameTest extends PHPUnit_Framework_TestCase
         $game->place('knot',1,1);
         $game->place('knot',1,2);
     }
+
+    public function testIsWonWhenHasntWon()
+    {
+        $game = new Game();
+        $this->assertFalse($game->isWon(),"Game is saying it's been won when no moves have been done");
+    }
+
+    public function testIsWonWhenWon()
+    {
+        $game = new Game();
+        $game->place('knot',1,1);
+        $game->place('cross',2,1);
+        $game->place('knot',1,2);
+        $game->place('cross',2,2);
+        $game->place('knot',1,3);
+
+        $this->assertTrue($game->isWon(), "Game is saying it hasn't been won when it has been");
+    }
 }
  

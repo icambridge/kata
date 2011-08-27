@@ -67,4 +67,48 @@ class Game
         $this->lastType = $type;
         return $this->layout;
     }
+
+    public function isWon()
+    {
+        $isWon = false;
+        $types = array('cross','knot');
+
+        // Check for row wins
+        foreach($types as $type){
+            for ($column = 0; $column < 3; $column++) {
+                if ($this->layout[$column][0] == $type &&
+                    $this->layout[$column][1] == $type &&
+                    $this->layout[$column][2] == $type) {
+
+                    $isWon = true;
+                    break 2;
+                }
+            }
+
+            for($row = 0; $row < 3; $row++) {
+                if ($this->layout[0][$row] == $type &&
+                    $this->layout[1][$row] == $type &&
+                    $this->layout[2][$row] == $type) {
+                    $isWon = true;
+                    break 2;
+                }
+            }
+
+            if ($this->layout[0][0] == $type &&
+                $this->layout[1][1] == $type &&
+                $this->layout[2][2] == $type) {
+                $isWon = true;
+                break;
+            }
+
+            if ($this->layout[0][2] == $type &&
+                $this->layout[1][1] == $type &&
+                $this->layout[2][0] == $type) {
+                $isWon = true;
+                break;
+            }
+        }
+
+        return $isWon;
+    }
 }
