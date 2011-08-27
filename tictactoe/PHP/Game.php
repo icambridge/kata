@@ -75,6 +75,7 @@ class Game
 
         // Check for row wins
         foreach($types as $type){
+            $this->winner = $type;
             for ($column = 0; $column < 3; $column++) {
                 if ($this->layout[$column][0] == $type &&
                     $this->layout[$column][1] == $type &&
@@ -107,8 +108,16 @@ class Game
                 $isWon = true;
                 break;
             }
+            $this->winner = false;
         }
 
         return $isWon;
+    }
+
+    public function whoWon()
+    {
+        $this->isWon();
+
+        return $this->winner;
     }
 }
