@@ -10,7 +10,9 @@ require_once "Exceptions.php";
 
 class Game
 {
-    private $layout;
+    protected $layout;
+
+    protected $lastType;
 
     public function __construct()
     {
@@ -31,8 +33,13 @@ class Game
             throw new InvalidMove("'".$type."' isn't a valid type");
         }
 
+        if ($type == $this->lastType) {
+            $expected = ($type == 'knot') ? 'cross' : 'knot';
+            throw new InvalidMove("'".$type."' move when '".$expected."' expected");
+        }
+
         if (!is_int($column) && !ctype_digit($column)) {
-            throw new InvalidMove("Column isn't a number.");
+            throw new InvalidMove("Column isn't a valid number.");
         }
 
         $column = (int) $column;
@@ -49,15 +56,15 @@ class Game
             throw new InvalidMove("'".$row."' isn't a valid number for the row, expected between 1 and 3");
         }
 
-        $row--;
-        $column--;
+        $arrayRow = $row - 1;
+        $arrayColumn = $column - 1;
 
-        if ($this->layout[$column][$row] !== NULL) {
+        if ($this->layout[$arrayColumn][$arrayRow] !== NULL) {
             throw new InvalidMove("Column:".$column.", Row:".$row." isn't empty");
         }
 
-        $this->layout[$column][$row] = $type;
-
+        $this->layout[$arrayColumn][$arrayRow] = $type;
+        $this->lastType = $type;
         return $this->layout;
     }
 }
