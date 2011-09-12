@@ -5,7 +5,6 @@ require_once '../dayofweek.php';
 
 class DayOfWeekTest extends PHPUnit_Framework_TestCase
 {
-
     public function testDateWithSlashes()
     {
         $dayOfWeek = kataDayOfWeek("05/05/1985");
