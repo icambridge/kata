@@ -39,5 +39,6 @@ For more information, please refer to <http://unlicense.org/>
 * TicTacToe Player
 * Return the day of the week a certain date is - past/present/future
 * FizzBuzz
+* Prime Numbers using Sieve of Eratosthenes
 * Quick Sort
 * Liar, Liar
