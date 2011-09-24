@@ -106,7 +106,40 @@ class GameTest extends PHPUnit_Framework_TestCase
         $winner = $game->whoWon();
         $this->assertEquals('knot',$winner, "It claims knot hasn't won the game when it has");
     }
-
+    
+    public function testWinsRow()
+    {    	
+        $game = new Game();        
+        $game->place('knot',1,1);
+        $game->place('cross',1,2);
+        $game->place('knot',2,1);
+        $game->place('cross',2,2);
+        $game->place('knot',3,1);
+        $this->assertTrue($game->isWon(), "Game is saying it hasn't been won when it has been via a row");
+    }
+    
+	public function testWinsDiaganol()
+    {    	
+        $game = new Game();        
+        $game->place('knot',1,1);
+        $game->place('cross',1,2);
+        $game->place('knot',2,2);
+        $game->place('cross',2,1);
+        $game->place('knot',3,3);
+        $this->assertTrue($game->isWon(), "Game is saying it hasn't been won when it has been via a Diaganol");
+    }
+	
+    public function testWinsOtherDiaganol()
+    {    	
+        $game = new Game();        
+        $game->place('knot',1,3);
+        $game->place('cross',1,2);
+        $game->place('knot',2,2);
+        $game->place('cross',2,1);
+        $game->place('knot',3,1);
+        $this->assertTrue($game->isWon(), "Game is saying it hasn't been won when it has been via a Diaganol");
+    }
+    
     public function testWhoWonWhenNooneHas()
     {
         $game = new Game();
@@ -122,5 +155,6 @@ class GameTest extends PHPUnit_Framework_TestCase
         $game->place('cross',2,2);
         $game->place('knot',1,3);
     }
+   
 }
  

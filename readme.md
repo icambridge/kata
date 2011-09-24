@@ -42,3 +42,4 @@ For more information, please refer to <http://unlicense.org/>
 * Prime Numbers using Sieve of Eratosthenes
 * Quick Sort
 * Liar, Liar
+* Sudoku Solver

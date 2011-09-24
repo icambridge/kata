@@ -22,7 +22,8 @@ class LiarLiarTest extends PHPUnit_Framework_TestCase
 		fwrite($fp, "Tommaso".PHP_EOL);
 		fwrite($fp, "George    2".PHP_EOL);
 		fwrite($fp, "Isaac".PHP_EOL);
-		fwrite($fp, "Stephen");		
+		fwrite($fp, "Stephen");	
+		fclose($fp);	
 	}
 	
 	public function tearDown()
@@ -97,7 +98,30 @@ class LiarLiarTest extends PHPUnit_Framework_TestCase
 		$this->assertContains("Galileo", $lyingUsers, "Galileo isn't in the list of lying users");
 	}
 	
-	public function testThatRequiredOutputIs3Space2()
+	public function testThatRequiredOutputIs3TruthfulAnd2Liars()
+	{
+		$fp = fopen($this->filename, "w+");
+		fwrite($fp, "5".PHP_EOL);
+		fwrite($fp, "Stephen   1".PHP_EOL);
+		fwrite($fp, "Isaac".PHP_EOL);
+		fwrite($fp, "Tommaso   1".PHP_EOL);
+		fwrite($fp, "Galileo".PHP_EOL);
+		fwrite($fp, "Isaac     2".PHP_EOL);
+		fwrite($fp, "Tommaso".PHP_EOL);
+		fwrite($fp, "Stephen".PHP_EOL);	
+		fwrite($fp, "Galileo   1".PHP_EOL);
+		fwrite($fp, "Tommaso".PHP_EOL);
+		fwrite($fp, "George    1".PHP_EOL);
+		fwrite($fp, "Isaac");
+		fclose($fp);
+		$this->filename = time().".txt";
+		$liarLiar = new LiarLiar($this->filename);
+		$output = $liarLiar->getRequiredOutput();
+		
+		$this->assertEquals("3 2",$output,"The required output isn't '3 2'");
+	}
+	
+	public function testThatRequiredOutputIs3LairsAnd2Truthful()
 	{
 		$liarLiar = new LiarLiar($this->filename);
 		$output = $liarLiar->getRequiredOutput();

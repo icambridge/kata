@@ -72,11 +72,6 @@ class LiarLiar
 		
 	}
 	
-	protected function _insertNameToList($name)
-	{
-		
-	}
-	
 	protected function _processFile()
 	{
 		if ($this->beenProcessed === true) {
