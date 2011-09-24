@@ -102,11 +102,65 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$missingNumbers = $missing['numbers'];
 		$this->assertTrue(is_array($missingNumbers), "The missing number isn't an array");
 		$this->assertEquals(1, sizeof($missingNumbers), "More than one number missing");
-		$this->assertContains(3, $missingNumbers, "Missing Numbers doesn't contain '2'");
+		$this->assertContains(3, $missingNumbers, "Missing Numbers doesn't contain '3'");
 		
 		$missingPostitions = $missing['postitions'];
 		$this->assertTrue(is_array($missingPostitions), "The postitions isn't an array");
 		$this->assertEquals(1, sizeof($missingPostitions), "More than one position is empty");
-		$this->assertContains(6, $missingPostitions, "Missing Postitions doesn't contain '9'");
+		$this->assertContains(6, $missingPostitions, "Missing Postitions doesn't contain '6'");
+	}
+
+	public function testCheckColInvalidColGiven()
+	{	
+		$this->setExpectedException("InvalidAgrument", "Invalid col number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		
+		$missing = $solver->checkCol(10);
+	}
+	
+	public function testGetMissingNumbersInvalidInput()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid agrument given to getMissingNumbers array expected");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+
+		$numbers = $solver->getMissingNumbers(1);
+	}
+	
+	public function testGetMissingNumbers()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+
+		$numbers = $solver->getMissingNumbers(array(1,2,4,5,6,7,8,9));
+		
+		$this->assertTrue(is_array($numbers), "Numbers isn't an array");
+		$this->assertContains(3, $numbers, "Doesn't contain 3");
+		$this->assertEquals(1, sizeof($numbers), "Numbers doesn't contain only 1 item");
+		
+	}
+	
+	public function testCheckColFind2IsRequired()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		
+		$missing = $solver->checkCol(0);
+		$this->assertTrue(is_array($missing), "Missing isn't an array");
+		$this->assertEquals(2, sizeof($missing), "There should only be one result");
+		$this->assertArrayHasKey("numbers", $missing, "The key 'numbers' doesn't exists in the array");
+		$this->assertArrayHasKey("postitions", $missing, "The key 'postitions' doesn't exist in the array");
+		$this->assertSame(sizeof($missing['numbers']), sizeof($missing['postitions']), "The number of numbers missing and the number of postitions aren't the same");
+		
+		$missingNumbers = $missing['numbers'];
+		$this->assertTrue(is_array($missingNumbers), "The missing number isn't an array");
+		$this->assertEquals(1, sizeof($missingNumbers), "More than one number missing");
+		$this->assertContains(2, $missingNumbers, "Missing Numbers doesn't contain '2'");
+		
+		$missingPostitions = $missing['postitions'];
+		$this->assertTrue(is_array($missingPostitions), "The postitions isn't an array");
+		$this->assertEquals(1, sizeof($missingPostitions), "More than one position is empty");
+		$this->assertContains(4, $missingPostitions, "Missing Postitions doesn't contain '4'");
 	}
 }

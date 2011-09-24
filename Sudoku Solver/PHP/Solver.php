@@ -46,14 +46,49 @@ class Solver
 			}	
 		}
 		
+		$missingNumbers = $this->getMissingNumbers($foundNumbers);
+		
+		return array('numbers' => $missingNumbers,
+					 'postitions' => $postitions);
+	}
+
+	public function getMissingNumbers($foundNumbers) 
+	{
+		if (!is_array($foundNumbers)) {
+			throw new InvalidAgrument("Invalid agrument given to getMissingNumbers array expected");
+		}
+		
+		$missingNumbers = array();
 		for ($number = 1; $number <= 9; $number++) {
 			if (!in_array($number, $foundNumbers)) {
 				$missingNumbers[] = $number;
 			}
 		}
+		return $missingNumbers;
+	}
+	
+	public function checkCol($col) 
+	{
+		
+		$foundNumbers = array();
+		$missingNumbers = array();
+		$postitions = array();
+		
+		foreach ($this->_puzzle as $rowNum => $row) {
+			if (!array_key_exists($col,$row)) {
+				throw new InvalidAgrument("Invalid col number given");
+			}
+			
+			if ($row[$col] === NULL) {
+				$postitions[] = $rowNum;
+			} else {
+				$foundNumbers[] = $row[$col];
+			}
+		}
+		
+		$missingNumbers = $this->getMissingNumbers($foundNumbers);
 		
 		return array('numbers' => $missingNumbers,
 					 'postitions' => $postitions);
 	}
-	
 }
