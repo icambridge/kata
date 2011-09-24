@@ -422,4 +422,88 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$this->assertContains(3, $otherSquares['cols'], "Number 3 isn't in rows for square 9");
 		$this->assertContains(6, $otherSquares['cols'], "Number 6 isn't in rows for square 9");
 	}
+	
+	public function testGetSquareRowsAndColsInvalidNumber()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid square number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->getSquareColsAndRows(10);
+	}
+	
+	public function testGetSquareRowsAndColsValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$gird = $solver->getSquareColsAndRows(1);
+		
+		$this->assertEquals(2, sizeof($gird));
+		$this->assertArrayHasKey('rows', $gird);
+		$this->assertArrayHasKey('cols', $gird);
+		$this->assertEquals(3, sizeof($gird['rows']));
+		$this->assertEquals(3, sizeof($gird['cols']));
+		$this->assertContains(0, $gird['rows']);
+		$this->assertContains(1, $gird['rows']);
+		$this->assertContains(2, $gird['rows']);
+		$this->assertContains(0, $gird['cols']);
+		$this->assertContains(1, $gird['cols']);
+		$this->assertContains(2, $gird['cols']);
+	}
+	
+	public function testLocationOfNumberInvalidSquareNumberGiven()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid square number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->locationOfNumberInSquare(10,1,'row');
+	}
+	
+	public function testLocationOfNumberInvalidNumberGiven()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->locationOfNumberInSquare(1,10,'row');
+	}
+	
+	public function testLocationOfNumberInvalidTypeGiven()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid type given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->locationOfNumberInSquare(1,1,'n/a');
+	}
+	
+	public function testLocationOfNumberValidButMissing()
+	{		
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$location = $solver->locationOfNumberInSquare(1,1,'row');
+		$this->assertEquals('missing', $location);
+	}
+
+	public function testLocationOfNumberValidAndPresentRow()
+	{		
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$location = $solver->locationOfNumberInSquare(1,2,'row');
+		$this->assertEquals('top', $location);
+		$location = $solver->locationOfNumberInSquare(1,4,'row');
+		$this->assertEquals('middle', $location);
+		$location = $solver->locationOfNumberInSquare(1,3,'row');
+		$this->assertEquals('bottom', $location);
+	}
+	
+	public function testLocationOfNumberValidAndPresentCol()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$location = $solver->locationOfNumberInSquare(1,2,'col');
+		$this->assertEquals('center', $location);
+		$location = $solver->locationOfNumberInSquare(1,4,'col');
+		$this->assertEquals('left', $location);
+		$location = $solver->locationOfNumberInSquare(1,3,'col');
+		$this->assertEquals('right', $location);
+	}
+	
 }

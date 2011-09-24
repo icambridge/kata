@@ -99,24 +99,10 @@ class Solver
 			throw new InvalidAgrument("Invalid square number given");
 		}
 		
-		if ($squareNumber >= 1 && $squareNumber <= 3) {
-			$rows = array(0,1,2);
-		} elseif ($squareNumber >= 4 && $squareNumber <= 6) {
-			$rows = array(3,4,5);
-		} elseif ($squareNumber >= 7 && $squareNumber <= 9) {
-			$rows = array(6,7,8);
-		}
-		
-		if (in_array($squareNumber, array(1,4,7))) {
-			$cols = array(0,1,2);
-		} elseif (in_array($squareNumber, array(2,5,8))) {
-			$cols = array(3,4,5);
-		} elseif (in_array($squareNumber, array(3,6,9))) {
-			$cols = array(6,7,8);
-		}
-		
 		$postitions = array();
 		$foundNumbers = array();
+		$gird = $this->getSquareColsAndRows($squareNumber);
+		extract($gird);
 		
 		foreach ($rows as $row) {
 			foreach ($cols as $col) {
@@ -242,5 +228,80 @@ class Solver
 	public function _checkTheNumbersAreTheSame($val)
 	{
 		return ($val !== $this->_tmpNumber);
+	}
+	
+	public function getSquareColsAndRows($squareNumber)
+	{
+		if ($squareNumber < 1 || $squareNumber > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
+		
+		$output = array();
+		if ($squareNumber >= 1 && $squareNumber <= 3) {
+			$output['rows'] = array(0,1,2);
+		} elseif ($squareNumber >= 4 && $squareNumber <= 6) {
+			$output['rows'] = array(3,4,5);
+		} elseif ($squareNumber >= 7 && $squareNumber <= 9) {
+			$output['rows'] = array(6,7,8);
+		}
+		
+		if (in_array($squareNumber, array(1,4,7))) {
+			$output['cols'] = array(0,1,2);
+		} elseif (in_array($squareNumber, array(2,5,8))) {
+			$output['cols'] = array(3,4,5);
+		} elseif (in_array($squareNumber, array(3,6,9))) {
+			$output['cols'] = array(6,7,8);
+		}
+		return $output;
+	}
+	
+	public function locationOfNumberInSquare($squareNumber, $number, $type) 
+	{
+		if ($squareNumber < 1 || $squareNumber > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
+		
+		if ($type != "row" && $type != "col") {
+			throw new InvalidAgrument("Invalid type given");
+		}
+		
+		if ($number < 1 || $number > 9) {
+			throw new InvalidAgrument("Invalid number given");
+		}
+		
+		$girdNumbers = $this->getSquareColsAndRows($squareNumber);
+		$found = false;
+		
+		foreach ($girdNumbers['rows'] as $rowKey => $rowNum ) {
+			foreach ($girdNumbers['cols'] as $colKey => $colNum) {
+				if ($this->_puzzle[$rowNum][$colNum] === $number) {
+					$found = true;
+					break 2;
+				}
+			}
+		}
+		if ($found == true) {
+			if ($type == "row") {
+				if ($rowKey === 0) {
+					$type = "top";
+				} elseif ($rowKey === 1) {
+					$type = "middle";
+				} elseif ($rowKey === 2) {
+					$type = "bottom";
+				}
+			} elseif ($type == "col") {
+				if ($colKey === 0) {
+					$type = "left";
+				} elseif ($colKey === 1) {
+					$type = "center";
+				} elseif ($colKey === 2) {
+					$type = "right";
+				}
+			}
+		} else {
+			$type = "missing";
+		}
+		
+		return $type;
 	}
 }
