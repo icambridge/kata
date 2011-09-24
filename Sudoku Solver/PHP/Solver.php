@@ -133,4 +133,17 @@ class Solver
 		return array('numbers' => $missingNumbers,
 					 'postitions' => $postitions);
 	}
+	
+	public function getNumber($row, $col)
+	{
+		if (!isset($this->_puzzle[$row])) {
+			throw new InvalidAgrument("Invalid row given");
+		}
+		
+		if (!array_key_exists($col, $this->_puzzle[$row])) {
+			throw new InvalidAgrument("Invalid col given");
+		}
+		
+		return $this->_puzzle[$row][$col];
+	}
 }

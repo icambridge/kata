@@ -224,4 +224,37 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$this->assertContains(6, $missingNumbers, "Missing Numbers doesn't contain '6'");
 		$this->assertContains(9, $missingNumbers, "Missing Numbers doesn't contain '9'");
 	}
+	
+	public function testGetNumberInvalidRow()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid row given");		
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		
+		$number = $solver->getNumber(10,0);
+	}
+	
+	public function testGetNumberInvalidCol()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid col given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		
+		$number = $solver->getNumber(0,10);		
+	}
+	
+	public function testGetNumber()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		
+		$number = $solver->getNumber(0,0);
+		$this->assertEquals(5, $number);
+		
+		$number = $solver->getNumber(1,1);
+		$this->assertNull($number);
+		
+		$number = $solver->getNumber(8,8);
+		$this->assertEquals(7, $number);
+	}
 }
