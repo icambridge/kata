@@ -6,6 +6,8 @@ class Solver
 {
 	protected $_puzzle;
 	protected $_tmpNumber;
+	protected $_rowWords = array('top','middle','bottom');
+	protected $_colWords = array('left','center','right');
 	
 	public function __construct($puzzle = array())
 	{
@@ -27,6 +29,7 @@ class Solver
 		}
 		
 		$this->_puzzle = $puzzle;
+		
 	}
 	
 	public function checkRow($row) 
@@ -95,9 +98,7 @@ class Solver
 	
 	public function checkSquare($squareNumber)
 	{
-		if ($squareNumber < 1 || $squareNumber > 9) {
-			throw new InvalidAgrument("Invalid square number given");
-		}
+		$this->_checkValidSquareNumber($squareNumber);
 		
 		$postitions = array();
 		$foundNumbers = array();
@@ -232,9 +233,7 @@ class Solver
 	
 	public function getSquareColsAndRows($squareNumber)
 	{
-		if ($squareNumber < 1 || $squareNumber > 9) {
-			throw new InvalidAgrument("Invalid square number given");
-		}
+		$this->_checkValidSquareNumber($squareNumber);
 		
 		$output = array();
 		if ($squareNumber >= 1 && $squareNumber <= 3) {
@@ -257,9 +256,7 @@ class Solver
 	
 	public function locationOfNumberInSquare($squareNumber, $number, $type) 
 	{
-		if ($squareNumber < 1 || $squareNumber > 9) {
-			throw new InvalidAgrument("Invalid square number given");
-		}
+		$this->_checkValidSquareNumber($squareNumber);
 		
 		if ($type != "rows" && $type != "cols") {
 			throw new InvalidAgrument("Invalid type given");
@@ -282,21 +279,9 @@ class Solver
 		}
 		if ($found == true) {
 			if ($type == "rows") {
-				if ($rowKey === 0) {
-					$type = "top";
-				} elseif ($rowKey === 1) {
-					$type = "middle";
-				} elseif ($rowKey === 2) {
-					$type = "bottom";
-				}
-			} elseif ($type == "cols") {
-				if ($colKey === 0) {
-					$type = "left";
-				} elseif ($colKey === 1) {
-					$type = "center";
-				} elseif ($colKey === 2) {
-					$type = "right";
-				}
+				$type = $this->_rowWords[$rowKey];
+			} elseif ($type == "cols") {				
+				$type = $this->_colWords[$colKey];
 			}
 		} else {
 			$type = "missing";
@@ -307,9 +292,7 @@ class Solver
 	
 	public function getMissingLocation($squareNumber, $number)
 	{
-		if ($squareNumber < 1 || $squareNumber > 9) {
-			throw new InvalidAgrument("Invalid square number given");
-		}
+		$this->_checkValidSquareNumber($squareNumber);
 		
 		if ($number < 1 || $number > 9) {
 			throw new InvalidAgrument("Invalid number given");
@@ -338,5 +321,35 @@ class Solver
 		$output['cols'] = current(array_diff(array("left","right","center"), $locations['cols']));
 		$output['rows'] = current(array_diff(array('top','middle','bottom'),$locations['rows']));
 		return $output;
+	}
+	
+	public function getGirdLocationForWordLocation($squareNumber, $row, $col) 
+	{
+		$this->_checkValidSquareNumber($squareNumber);
+		
+		$rowKey = array_search($row, $this->_rowWords);
+		$colKey = array_search($col, $this->_colWords);
+		if ($rowKey === false) {
+			throw new InvalidAgrument("Invalid row given");
+		}
+		
+		if ($colKey === false) {
+			throw new InvalidAgrument("Invalid col given");
+		}
+		
+		$rowsAndCols = $this->getSquareColsAndRows($squareNumber);
+		
+		$output = array();
+		$output['cols'] = $rowsAndCols['cols'][$colKey];
+		$output['rows'] = $rowsAndCols['rows'][$rowKey];
+		
+		return $output;
+	}
+	
+	protected function _checkValidSquareNumber($squareNumber)
+	{
+		if ($squareNumber < 1 || $squareNumber > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
 	}
 }

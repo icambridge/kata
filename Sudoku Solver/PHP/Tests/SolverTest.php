@@ -535,4 +535,40 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('top', $location['rows']);
 	}
 	
+	public function testGetGirdLocationForWordLocationInvalidSquareNumber()
+	{		
+		$this->setExpectedException("InvalidAgrument", "Invalid square number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->getGirdLocationForWordLocation(10,'right','middle');		
+	}
+	
+	public function testGetGirdLocationForWordLocationInvalidRow()
+	{		
+		$this->setExpectedException("InvalidAgrument", "Invalid row given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->getGirdLocationForWordLocation(1,'middlse','right');		
+	}
+	
+	public function testGetGirdLocationForWordLocationInvalidCol()
+	{		
+		$this->setExpectedException("InvalidAgrument", "Invalid col given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->getGirdLocationForWordLocation(2,'middle','rights');		
+	}
+	
+	public function testGetGirdLocationForWordLocationValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$location = $solver->getGirdLocationForWordLocation(2,'middle','right');
+		$this->assertTrue(is_array($location));
+		$this->assertEquals(2,sizeof($location));
+		$this->assertArrayHasKey('cols', $location);
+		$this->assertArrayHasKey('rows', $location);
+		$this->assertEquals(5, $location['cols']);
+		$this->assertEquals(1, $location['rows']);
+	}
 }
