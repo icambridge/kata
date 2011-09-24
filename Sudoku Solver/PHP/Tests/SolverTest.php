@@ -257,4 +257,98 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$number = $solver->getNumber(8,8);
 		$this->assertEquals(7, $number);
 	}
+	
+	public function testColHasNumberInvalidCol()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid col given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->colHasNumber(10,1);			
+	}
+	
+	public function testColHasNumberInvalidNumber()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->colHasNumber(0,10);
+	}
+	
+	public function testColHasNumberValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$numberDoesExist = $solver->colHasNumber(0,1);
+		$numberDoesntExist = $solver->colHasNumber(0, 2);
+		
+		$this->assertTrue($numberDoesExist);
+		$this->assertFalse($numberDoesntExist);
+	}
+	
+	public function testRowHasNumberInvalidRow()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid row given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->rowHasNumber(10,1);
+	}
+	
+	public function testRowHasNumberInvalidNumber()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->rowHasNumber(0,10);
+	}
+	
+	public function testRowHasNumberValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$numberDoesExist = $solver->rowHasNumber(0,1);
+		$numberDoesntExist = $solver->rowHasNumber(0, 3);
+		
+		$this->assertTrue($numberDoesExist);
+		$this->assertFalse($numberDoesntExist);		
+	}
+	
+	public function testSquareAccordingToRowAndColInvalidRow()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid row given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->squareAccordingToRowAndCol(10,1);
+	}
+	
+	public function testSquareAccordingToRowAndColInvalidCol()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid col given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->squareAccordingToRowAndCol(1,10);
+	}
+
+	public function testSquareAccordingToRowAndColValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$squareNumber = $solver->squareAccordingToRowAndCol(1,1);
+		$this->assertEquals(1, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(0,5);
+		$this->assertEquals(2, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(0,8);
+		$this->assertEquals(3, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(5,0);
+		$this->assertEquals(4, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(5,5);
+		$this->assertEquals(5, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(5,8);
+		$this->assertEquals(6, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(8,0);
+		$this->assertEquals(7, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(8,5);
+		$this->assertEquals(8, $squareNumber);
+		$squareNumber = $solver->squareAccordingToRowAndCol(8,8);
+		$this->assertEquals(9, $squareNumber);	
+	}
 }

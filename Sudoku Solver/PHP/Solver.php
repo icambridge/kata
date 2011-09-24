@@ -146,4 +146,66 @@ class Solver
 		
 		return $this->_puzzle[$row][$col];
 	}
+	
+	public function colHasNumber($col, $number)
+	{
+		if ($number < 0 || $number > 8) {
+			throw new InvalidAgrument("Invalid number given");
+		}
+		
+		foreach($this->_puzzle as $rowNum => $row) {
+			if (!array_key_exists($col,$row)) {
+				throw new InvalidAgrument("Invalid col given");
+			}
+			
+			if ($row[$col] === $number) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public function rowHasNumber($row, $number)
+	{
+		if ($number < 0 || $number > 8) {
+			throw new InvalidAgrument("Invalid number given");
+		}
+		
+		if (!isset($this->_puzzle[$row])) {
+			throw new InvalidAgrument("Invalid row given");
+		}
+		
+		foreach($this->_puzzle[$row] as $col) {
+			if ($col === $number) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	public function squareAccordingToRowAndCol($row, $col)
+	{
+		if (!isset($this->_puzzle[$row])) {
+			throw new InvalidAgrument("Invalid row given");
+		}
+		
+		if (!array_key_exists($col,$this->_puzzle[$row])) {
+			throw new InvalidAgrument("Invalid col given");
+		}
+		$start = array(0,3,6);
+		foreach ($start as $startNum) {
+			$endNum = $startNum+2;
+			if ($row >= $startNum &&  $row <= $endNum) { 
+				if ($col >= 0 && $col <= 2) {
+					return $startNum+1;
+				} elseif ($col >= 3 && $col <= 5) {
+					return $startNum+2;
+				} elseif ($col >= 6 && $col <= 8) {
+					return $startNum+3;
+				}
+			} 
+		}
+	}
 }
