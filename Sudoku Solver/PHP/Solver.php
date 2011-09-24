@@ -5,6 +5,7 @@ require_once '../Exceptions.php';
 class Solver
 {
 	protected $_puzzle;
+	protected $_tmpNumber;
 	
 	public function __construct($puzzle = array())
 	{
@@ -199,13 +200,47 @@ class Solver
 			$endNum = $startNum+2;
 			if ($row >= $startNum &&  $row <= $endNum) { 
 				if ($col >= 0 && $col <= 2) {
-					return $startNum+1;
+					$returnNumber = $startNum+1;
 				} elseif ($col >= 3 && $col <= 5) {
-					return $startNum+2;
+					$returnNumber = $startNum+2;
 				} elseif ($col >= 6 && $col <= 8) {
-					return $startNum+3;
+					$returnNumber = $startNum+3;
 				}
 			} 
 		}
+		
+		return $returnNumber;
+	}
+	
+	public function getOtherSquares($number)
+	{
+		if ($number < 1 || $number > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
+		$squares = array();
+		$squares['rows'] = array( range(1,3),
+							 range(4,6),
+							 range(7,9));
+		$squares['cols'] = array( array(1,4,7),
+							 array(2,5,8),
+							 array(3,6,9));
+							 
+		$output = array();					 
+		$squareKey = 0;
+		$this->_tmpNumber = $number;
+		foreach ($squares as $type => $squareSet) {
+			foreach($squareSet as $numbers) {
+				if (in_array($number,$numbers)) {
+					$output[$type] = array_filter($numbers, array($this, '_checkTheNumbersAreTheSame'));
+				}
+			}
+		}
+		$this->_tmpNumber = 0;
+		return $output;
+	}
+	
+	public function _checkTheNumbersAreTheSame($val)
+	{
+		return ($val !== $this->_tmpNumber);
 	}
 }

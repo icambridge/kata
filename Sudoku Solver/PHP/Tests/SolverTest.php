@@ -351,4 +351,75 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$squareNumber = $solver->squareAccordingToRowAndCol(8,8);
 		$this->assertEquals(9, $squareNumber);	
 	}
+	
+	public function testGetOtherSquaresInvalidNumber()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid square number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->getOtherSquares(10);
+	}
+	
+	public function testGetOtherSquaresValid()
+	{
+		// TODO remove so much code dupilcation.
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$otherSquares = $solver->getOtherSquares(1);
+		$this->assertEquals(2, sizeof($otherSquares), "Number of types isn't two");
+		$this->assertEquals(2, sizeof($otherSquares['rows']), "Number of rows isn't two");
+		$this->assertEquals(2, sizeof($otherSquares['cols']), "Number of cols isn't two");
+		$this->assertContains(2, $otherSquares['rows'], "Number 2 isn't in rows for square 1");
+		$this->assertContains(3, $otherSquares['rows'], "Number 3 isn't in rows for square 1");
+		$this->assertContains(4, $otherSquares['cols'], "Number 4 isn't in cols for square 1");
+		$this->assertContains(7, $otherSquares['cols'], "Number 7 isn't in cols for square 1");
+		
+		$otherSquares = $solver->getOtherSquares(2);
+		$this->assertContains(1, $otherSquares['rows'], "Number 1 isn't in rows for square 2");
+		$this->assertContains(3, $otherSquares['rows'], "Number 3 isn't in rows for square 2");
+		$this->assertContains(5, $otherSquares['cols'], "Number 5 isn't in cols for square 2");
+		$this->assertContains(8, $otherSquares['cols'], "Number 8 isn't in cols for square 2");
+		
+		$otherSquares = $solver->getOtherSquares(3);
+		$this->assertContains(1, $otherSquares['rows'], "Number 1 isn't in rows for square 3");
+		$this->assertContains(2, $otherSquares['rows'], "Number 2 isn't in rows for square 3");
+		$this->assertContains(6, $otherSquares['cols'], "Number 6 isn't in cols for square 3");
+		$this->assertContains(9, $otherSquares['cols'], "Number 9 isn't in cols for square 3");
+		
+		$otherSquares = $solver->getOtherSquares(4);
+		$this->assertContains(5, $otherSquares['rows'], "Number 5 isn't in rows for square 4");
+		$this->assertContains(6, $otherSquares['rows'], "Number 6 isn't in rows for square 4");
+		$this->assertContains(1, $otherSquares['cols'], "Number 1 isn't in cols for square 4");
+		$this->assertContains(7, $otherSquares['cols'], "Number 7 isn't in cols for square 4");
+		
+		$otherSquares = $solver->getOtherSquares(5);
+		$this->assertContains(4, $otherSquares['rows'], "Number 4 isn't in rows for square 5");
+		$this->assertContains(6, $otherSquares['rows'], "Number 6 isn't in rows for square 5");
+		$this->assertContains(2, $otherSquares['cols'], "Number 2 isn't in cols for square 5");
+		$this->assertContains(8, $otherSquares['cols'], "Number 8 isn't in cols for square 5");
+		
+		$otherSquares = $solver->getOtherSquares(6);
+		$this->assertContains(4, $otherSquares['rows'], "Number 4 isn't in rows for square 6");
+		$this->assertContains(5, $otherSquares['rows'], "Number 5 isn't in rows for square 6");
+		$this->assertContains(3, $otherSquares['cols'], "Number 3 isn't in cols for square 6");
+		$this->assertContains(9, $otherSquares['cols'], "Number 9 isn't in cols for square 6");
+		
+		$otherSquares = $solver->getOtherSquares(7);
+		$this->assertContains(8, $otherSquares['rows'], "Number 8 isn't in rows for square 7");
+		$this->assertContains(9, $otherSquares['rows'], "Number 9 isn't in rows for square 7");
+		$this->assertContains(1, $otherSquares['cols'], "Number 1 isn't in cols for square 7");
+		$this->assertContains(4, $otherSquares['cols'], "Number 4 isn't in cols for square 7");
+		
+		$otherSquares = $solver->getOtherSquares(8);
+		$this->assertContains(7, $otherSquares['rows'], "Number 7 isn't in rows for square 8");
+		$this->assertContains(9, $otherSquares['rows'], "Number 9 isn't in rows for square 8");
+		$this->assertContains(2, $otherSquares['cols'], "Number 2 isn't in cols for square 8");
+		$this->assertContains(5, $otherSquares['cols'], "Number 5 isn't in cols for square 8");
+		
+		$otherSquares = $solver->getOtherSquares(9);
+		$this->assertContains(7, $otherSquares['rows'], "Number 7 isn't in rows for square 9");
+		$this->assertContains(8, $otherSquares['rows'], "Number 8 isn't in rows for square 9");
+		$this->assertContains(3, $otherSquares['cols'], "Number 3 isn't in rows for square 9");
+		$this->assertContains(6, $otherSquares['cols'], "Number 6 isn't in rows for square 9");
+	}
 }
