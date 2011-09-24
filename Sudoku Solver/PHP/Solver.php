@@ -91,4 +91,46 @@ class Solver
 		return array('numbers' => $missingNumbers,
 					 'postitions' => $postitions);
 	}
+	
+	public function checkSquare($squareNumber)
+	{
+		if ($squareNumber < 1 || $squareNumber > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
+		
+		if ($squareNumber >= 1 && $squareNumber <= 3) {
+			$rows = array(0,1,2);
+		} elseif ($squareNumber >= 4 && $squareNumber <= 6) {
+			$rows = array(3,4,5);
+		} elseif ($squareNumber >= 7 && $squareNumber <= 9) {
+			$rows = array(6,7,8);
+		}
+		
+		if (in_array($squareNumber, array(1,4,7))) {
+			$cols = array(0,1,2);
+		} elseif (in_array($squareNumber, array(2,5,8))) {
+			$cols = array(3,4,5);
+		} elseif (in_array($squareNumber, array(3,6,9))) {
+			$cols = array(6,7,8);
+		}
+		
+		$postitions = array();
+		$foundNumbers = array();
+		
+		foreach ($rows as $row) {
+			foreach ($cols as $col) {
+				if ($this->_puzzle[$row][$col] === NULL) {
+					$postitions[] = array('row' => $row, 
+										 'col' => $col); 
+				} else {
+					$foundNumbers[] = $this->_puzzle[$row][$col];
+				}
+			}
+		}
+		
+		$missingNumbers = $this->getMissingNumbers($foundNumbers);
+		
+		return array('numbers' => $missingNumbers,
+					 'postitions' => $postitions);
+	}
 }
