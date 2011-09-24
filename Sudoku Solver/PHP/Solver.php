@@ -261,7 +261,7 @@ class Solver
 			throw new InvalidAgrument("Invalid square number given");
 		}
 		
-		if ($type != "row" && $type != "col") {
+		if ($type != "rows" && $type != "cols") {
 			throw new InvalidAgrument("Invalid type given");
 		}
 		
@@ -281,7 +281,7 @@ class Solver
 			}
 		}
 		if ($found == true) {
-			if ($type == "row") {
+			if ($type == "rows") {
 				if ($rowKey === 0) {
 					$type = "top";
 				} elseif ($rowKey === 1) {
@@ -289,7 +289,7 @@ class Solver
 				} elseif ($rowKey === 2) {
 					$type = "bottom";
 				}
-			} elseif ($type == "col") {
+			} elseif ($type == "cols") {
 				if ($colKey === 0) {
 					$type = "left";
 				} elseif ($colKey === 1) {
@@ -303,5 +303,40 @@ class Solver
 		}
 		
 		return $type;
+	}
+	
+	public function getMissingLocation($squareNumber, $number)
+	{
+		if ($squareNumber < 1 || $squareNumber > 9) {
+			throw new InvalidAgrument("Invalid square number given");
+		}
+		
+		if ($number < 1 || $number > 9) {
+			throw new InvalidAgrument("Invalid number given");
+		}
+		$locations = array();
+		$locations['rows'] = array();
+		$locations['cols'] = array();
+		$missing = false;
+		
+		$squares = $this->getOtherSquares($squareNumber);
+		foreach (array('rows','cols') as $type) {
+			foreach($squares[$type] as $typeSquareNumber) {
+				$locationInSquare = $this->locationOfNumberInSquare($typeSquareNumber, $number, $type);
+				if ($locationInSquare === "missing") {
+					$missing = true;	
+				}
+				$locations[$type][] = $locationInSquare;
+			}
+		}
+		
+		if ($missing !== false) {
+			return false;
+		}
+		
+		$output = array();
+		$output['cols'] = current(array_diff(array("left","right","center"), $locations['cols']));
+		$output['rows'] = current(array_diff(array('top','middle','bottom'),$locations['rows']));
+		return $output;
 	}
 }
