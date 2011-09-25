@@ -137,9 +137,8 @@ class Solver
 	
 	public function colHasNumber($col, $number)
 	{
-		if ($number < 0 || $number > 8) {
-			throw new InvalidAgrument("Invalid number given");
-		}
+		
+		$this->_checkValidNumber($number);
 		
 		foreach($this->_puzzle as $rowNum => $row) {
 			if (!array_key_exists($col,$row)) {
@@ -156,9 +155,8 @@ class Solver
 	
 	public function rowHasNumber($row, $number)
 	{
-		if ($number < 0 || $number > 8) {
-			throw new InvalidAgrument("Invalid number given");
-		}
+		
+		$this->_checkValidNumber($number);
 		
 		if (!isset($this->_puzzle[$row])) {
 			throw new InvalidAgrument("Invalid row given");
@@ -201,9 +199,7 @@ class Solver
 	
 	public function getOtherSquares($number)
 	{
-		if ($number < 1 || $number > 9) {
-			throw new InvalidAgrument("Invalid square number given");
-		}
+		$this->_checkValidSquareNumber($number);
 		$squares = array();
 		$squares['rows'] = array( range(1,3),
 							 range(4,6),
@@ -262,9 +258,7 @@ class Solver
 			throw new InvalidAgrument("Invalid type given");
 		}
 		
-		if ($number < 1 || $number > 9) {
-			throw new InvalidAgrument("Invalid number given");
-		}
+		$this->_checkValidNumber($number);
 		
 		$girdNumbers = $this->getSquareColsAndRows($squareNumber);
 		$found = false;
@@ -351,5 +345,55 @@ class Solver
 		if ($squareNumber < 1 || $squareNumber > 9) {
 			throw new InvalidAgrument("Invalid square number given");
 		}
+	}
+	
+	public function _checkValidNumber($number)
+	{
+		if ($number < 1 || $number > 9) {
+			throw new InvalidAgrument("Invalid number given");
+		}
+	}
+	
+	public function squareHasNumber($squareNumber, $number)
+	{
+		$this->_checkValidSquareNumber($squareNumber);
+		$this->_checkValidNumber($number);
+		
+		$locations = $this->getSquareColsAndRows($squareNumber);
+		extract($locations);
+		$found = false;
+		
+		foreach($rows as $rowNum) {
+			foreach ($cols as $colNum) {
+				if ($this->_puzzle[$rowNum][$colNum] === $number) {
+					$found = true;
+				}
+			}
+		}
+		
+		return $found;
+	}
+	
+	public function insertNumber($rowNum, $colNum, $number)
+	{
+		if ($this->rowHasNumber($rowNum, $number)) {
+			throw new NumberAlreadyExists("Number already exists in row");
+		}
+		if ($this->colHasNumber($colNum, $number)) {
+			throw new NumberAlreadyExists("Number already exists in col");
+		}
+		
+		$squareNumber = $this->squareAccordingToRowAndCol($rowNum, $colNum);
+		if ($this->squareHasNumber($squareNumber, $number)) {
+			throw new NumberAlreadyExists("Number already exists in square");
+		}
+		
+		if ($this->_puzzle[$rowNum][$colNum] !== NULL) {
+			throw new NotEmpty("Space isn't empty");
+		}
+		
+		$this->_puzzle[$rowNum][$colNum] = $number;
+		
+		return true;
 	}
 }

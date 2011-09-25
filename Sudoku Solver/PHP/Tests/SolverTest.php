@@ -66,17 +66,18 @@ class SolverTest extends PHPUnit_Framework_TestCase
 	
 	protected function _getPuzzle()
 	{
-		return array(0 => array(5,2,7,4,6,1,null,8,9),
+		return array(0 =>    array(5,2,7,4,6,1,null,8,9),
 						1 => array(4,null,6,null,null,8,7,null,5),
 						2 => array(8,9,3,null,5,7,6,1,4),
 						3 => array(7,null,9, 8,2,4 ,null,6,1),
-						4 => array(null,4,1, 6,9,5 ,8,7,3),
+						4 => array(null,4,1, 6,9,5 ,8,7,null),// change to 3
 						5 => array(6,null,5, 1,null,null,  4,9,2),
-						6 => array(1,7,null,3,8,2,null,5,null),
-						7 => array(9,5,null,null,4,6,null,null,8),
-						8 => array(3,6,8,5,1,9,null,4,7)
+						6 => array(1,7,null,  3,8,2,  null,5,null),
+						7 => array(9,5,null, null,4,6, null,null,8),
+						8 => array(3,6,8     ,5,1,9,          null,4,7)
 					);	
 	}
+	
 	
 	public function testCheckRowInvalidRowGiven()
 	{	
@@ -570,5 +571,93 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$this->assertArrayHasKey('rows', $location);
 		$this->assertEquals(5, $location['cols']);
 		$this->assertEquals(1, $location['rows']);
+	}
+	
+	public function testInsertNumberInvalidRowNum()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid row given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(10,1,1);
+	}
+	
+	public function testInsertNumberInvalidColNum()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid col given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(1,10,1);
+	}
+	
+	public function testInsertNumberInvalidNum()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(1,1,10);
+	}
+	
+	public function testInsertNumberNumberInRow()
+	{
+		$this->setExpectedException("NumberAlreadyExists", "Number already exists in row");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(1,1,8);
+	}
+		
+	public function testInsertNumberNumberInCol()
+	{
+		$this->setExpectedException("NumberAlreadyExists", "Number already exists in col");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(1,1,9);
+	}
+	
+	public function testInsertNumberNumberInSquare()
+	{
+		$this->setExpectedException("NumberAlreadyExists", "Number already exists in square");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(1,1,3);
+	}
+	
+	public function testInsertNumberNotEmpty()
+	{
+		$this->setExpectedException("NotEmpty", "Space isn't empty");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->insertNumber(7,8,3);
+	}
+	
+	public function testInsertNumberValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$this->assertTrue($solver->insertNumber(1,1,1));
+	}
+
+	public function testSquareHasNumberInvalidSquareNumber()
+	{		
+		$this->setExpectedException("InvalidAgrument", "Invalid square number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->squareHasNumber(10, 2);
+	}
+	
+	public function testSquareHasNumberInvalidNumber()
+	{
+		$this->setExpectedException("InvalidAgrument", "Invalid number given");
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$solver->squareHasNumber(1, 20);
+	}
+	
+
+	public function testSquareHasNumberValid()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);
+		$this->assertTrue($solver->squareHasNumber(1, 2));
+		$this->assertfalse($solver->squareHasNumber(1, 1));
 	}
 }
