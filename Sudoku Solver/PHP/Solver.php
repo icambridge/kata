@@ -6,6 +6,16 @@ class Solver
 {
 	protected $_puzzle;
 	protected $_tmpNumber;
+	protected $_possiblies = array(array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null),
+						array(null,null,null,null,null,null,null,null,null)
+					);
 	protected $_rowWords = array('top','middle','bottom');
 	protected $_colWords = array('left','center','right');
 	
@@ -62,13 +72,7 @@ class Solver
 			throw new InvalidAgrument("Invalid agrument given to getMissingNumbers array expected");
 		}
 		
-		$missingNumbers = array();
-		for ($number = 1; $number <= 9; $number++) {
-			if (!in_array($number, $foundNumbers)) {
-				$missingNumbers[] = $number;
-			}
-		}
-		return $missingNumbers;
+		return array_diff(range(1,9), $foundNumbers);
 	}
 	
 	public function checkCol($col) 
@@ -284,6 +288,77 @@ class Solver
 		return $type;
 	}
 	
+	public function checkIfNumberHasToBeInALocation($squareNumber, $number, $type, $locations)
+	{
+		$this->_checkValidSquareNumber($squareNumber);
+		$this->_checkValidNumber($number);
+		
+		if (empty($locations)) {
+			return false;
+		}
+		
+		$getGirdNumbers = $this->getSquareColsAndRows($squareNumber);
+		
+		
+		$found = false;
+		
+		if ($type == "cols") {
+			$missing = $this->getColLocationsMissing($locations);
+			foreach ($missing as $colKey => $missingLocation) {
+				if ($this->isColFull($getGirdNumbers['cols'][$colKey], $getGirdNumbers['rows'][0])) {
+					$found = true;
+					unset($missing[$colKey]);
+				}
+			}
+		} else {
+			$missing = $this->getRowLocationsMissing($locations);
+			foreach ($missing as $rowKey => $missingLocations) {
+				if ($this->isRowFull($getGirdNumbers['rows'][$rowKey], $getGirdNumbers['cols'][0])) {
+					$found = true;
+					unset($missing[$rowKey]);
+				}
+			}
+		}
+		
+		if ($found === true) {
+			return current($missing);
+		} else {
+			return false;
+		}
+		
+	} 
+	
+	public function isColFull($colNum,$startPoint) 
+	{
+		$full = true;
+		for ($pos = $startPoint; $pos < ($startPoint+3); $pos++) {
+			if ($this->_puzzle[$pos][$colNum] === NULL) {
+				$full = true;
+			}
+		}
+		return $full;
+	}
+	
+	public function isRowFull($rowNum,$startPoint)
+	{
+		$full = true;
+		for ($pos = $startPoint; $pos < ($startPoint+3); $pos++) {
+			if ($this->_puzzle[$rowNum][$pos] === NULL) {
+				$full = true;
+			}
+		}
+		return $full;
+	}
+	
+	public function getRowLocationsMissing($locations)
+	{
+		return array_diff(array('top','middle','bottom'),$locations);
+	}
+	
+	public function getColLocationsMissing($locations)
+	{
+		return array_diff(array("left","right","center"), $locations);	
+	}
 	public function getMissingLocation($squareNumber, $number)
 	{
 		$this->_checkValidSquareNumber($squareNumber);
@@ -295,25 +370,36 @@ class Solver
 		$locations['rows'] = array();
 		$locations['cols'] = array();
 		$missing = false;
+		$missingSquares = array();
 		
 		$squares = $this->getOtherSquares($squareNumber);
 		foreach (array('rows','cols') as $type) {
 			foreach($squares[$type] as $typeSquareNumber) {
 				$locationInSquare = $this->locationOfNumberInSquare($typeSquareNumber, $number, $type);
 				if ($locationInSquare === "missing") {
-					$missing = true;	
+					$missingSquares[] = array('squareNumber' => $typeSquareNumber, 'type' => $type);
 				}
 				$locations[$type][] = $locationInSquare;
 			}
 		}
 		
-		if ($missing !== false) {
-			return false;
+		if (!empty($missingSquares)) {
+			foreach ( $missingSquares as $missingSquare ) {				
+				$type = $missingSquare['type'];
+				
+				$hasToBe = $this->checkIfNumberHasToBeInALocation($missingSquare['squareNumber'], $number, $type, $locations[$type]);
+				if ($hasToBe === false) {
+					$missing = true;
+				} else {
+					$locations[$type][] = $hasToBe;
+				}
+			}
 		}
 		
 		$output = array();
-		$output['cols'] = current(array_diff(array("left","right","center"), $locations['cols']));
-		$output['rows'] = current(array_diff(array('top','middle','bottom'),$locations['rows']));
+		$output['cols'] = array_diff(array("left","right","center"), $locations['cols']);
+		$output['rows'] = array_diff(array('top','middle','bottom'),$locations['rows']);
+		$output['missing'] = $missing;
 		return $output;
 	}
 	
@@ -377,15 +463,15 @@ class Solver
 	public function insertNumber($rowNum, $colNum, $number)
 	{
 		if ($this->rowHasNumber($rowNum, $number)) {
-			throw new NumberAlreadyExists("Number already exists in row");
+			throw new NumberAlreadyExists("Number {$number} already exists in row {$rowNum}");
 		}
 		if ($this->colHasNumber($colNum, $number)) {
-			throw new NumberAlreadyExists("Number already exists in col");
+			throw new NumberAlreadyExists("Number {$number} already exists in col {$colNum}");
 		}
 		
 		$squareNumber = $this->squareAccordingToRowAndCol($rowNum, $colNum);
 		if ($this->squareHasNumber($squareNumber, $number)) {
-			throw new NumberAlreadyExists("Number already exists in square");
+			throw new NumberAlreadyExists("Number {$number} already exists in square {$squareNumber}");
 		}
 		
 		if ($this->_puzzle[$rowNum][$colNum] !== NULL) {
@@ -395,5 +481,215 @@ class Solver
 		$this->_puzzle[$rowNum][$colNum] = $number;
 		
 		return true;
+	}
+	
+	public function isSolved()
+	{
+		$solved = true;
+		foreach ($this->_puzzle as $row) {
+			foreach ($row as $col) {
+				if ($col === null) {
+					$solved = false;
+				}
+			}
+		}
+		
+		return $solved;
+	}
+	
+	public function checkIfNumberCanOnlyBeInOneCol($number, $colNums)
+	{
+		$foundIn = array(); 
+		foreach($colNums as $colNum) {
+			if ($this->colHasNumber($colNum, $number)) {
+				$foundIn[] = $colNum;
+			}
+		}
+		$desiredNumber = sizeof($colNums)-1;
+		if (sizeof($foundIn) === $desiredNumber) {
+			return current(array_diff($colNums,$foundIn));
+		} else {
+			return false;
+		}
+	}
+	
+	public function checkIfNumberCanOnlyBeInOneRow($number, $rowNums)
+	{
+		$foundIn = array(); 
+		foreach($rowNums as $rowNum) {
+			if ($this->colHasNumber($rowNum, $number)) {
+				$foundIn[] = $colNum;
+			}
+		}
+		$desiredNumber = sizeof($rowNums)-1;
+		if (sizeof($foundIn) === $desiredNumber) {
+			return current(array_diff($rowNums,$foundIn));
+		} else {
+			return false;
+		}
+	}
+	
+	public function checkIfNumberCanOnlyBeInOnePlaceInSquare($number, $squareNumber, $locations)
+	{
+		$girdLocations = $this->getSquareColsAndRows($squareNumber);
+		$canBe = array();		
+		
+		foreach ($girdLocations['rows'] as $rowKey => $rowNum) {
+			if (!in_array($this->_rowWords[$rowKey],$locations['rows'])) {
+				continue;	
+			}	
+					
+			if ($this->rowHasNumber($rowNum, $number)) {
+				continue;
+			}
+			
+			foreach ($girdLocations['cols'] as $colKey => $colNum) {
+				
+				if (!in_array($this->_colWords[$colKey],$locations['cols'])) {
+					continue;	
+				}			
+				
+				if ($this->colHasNumber($colNum, $number)) {
+					continue;
+				}
+				
+				
+				if ($this->_puzzle[$rowNum][$colNum] === NULL) {
+					$canBe[] = array('row' => $rowNum, 
+									 'col' => $colNum);	
+				}				
+			}
+		}
+		if (sizeof($canBe) === 1) {
+			return current($canBe);
+		} else {
+			return false;
+		}		
+	}
+	
+	public function getAllPossibilities($row,$col)
+	{
+		$this->_possiblies[$row][col] = array();
+		for ($number = 1; $number <= 9; $number++) {
+			if ( !$this->rowHasNumber($row, $number) &&
+				 !$this->colHasNumber($col, $number) &&
+				 $this->_puzzle[$row][$col] === NULL) {
+				 	$this->_possiblies[$row][col][] = $number;
+				 }
+		}
+	} 
+	
+	public function checkSquareIfPairsExists($squareNumber)
+	{
+		$girdLocations = $this->getSquareColsAndRows($squareNumber);
+		
+		$col = current($girdLocations['cols']);
+		$row = current();
+		$possible = array();
+		foreach ($number = 1; $number < 10; $number++) {
+			foreach($girdLocations['rows'] as $row) {
+				
+				foreach ($girdLocations['cols'] as $col) {
+					
+				}
+			}				
+			
+		}
+		
+	}
+	
+	public function solve()
+	{
+		$rounds = 0;
+		do {
+			$rounds++;
+			$insert = false;
+			for ($row = 0; $row < 9; $row++) {
+				$returnData = $this->checkRow($row);
+				if (sizeof($returnData['numbers']) === 1) {
+					$number = current($returnData['numbers']);
+					$col = current($returnData['postitions']);
+					$this->insertNumber($row, $col, $number);
+					$insert = true;
+				} else {
+					foreach($returnData['numbers'] as $number) {
+						$colNum = $this->checkIfNumberCanOnlyBeInOneCol($number, $returnData['postitions']);
+						if ($colNum !== false) {
+							$this->insertNumber($row, $colNum, $number);
+						}
+					}
+				}
+			}
+			
+			for ($col = 0; $col < 9; $col++) {
+				$returnData = $this->checkCol($col);
+				if (sizeof($returnData['numbers']) === 1) {
+					$number = current($returnData['numbers']);
+					$row = current($returnData['postitions']);
+					$this->insertNumber($row, $col, $number);
+					$insert = true;
+				}	
+			}
+			
+			for ($squareNumber = 1; $squareNumber <= 9; $squareNumber++) {
+				$returnData = $this->checkSquare($squareNumber);
+				if (sizeof($returnData['numbers']) === 1) {
+					$number = current($returnData['numbers']);
+					$postions = current($returnData['postitions']);
+					extract($postions);
+					$this->insertNumber($row, $col, $number);
+					$insert = true;
+				}
+
+				for ($number = 1; $number <= 9; $number++) {
+					if ($this->squareHasNumber($squareNumber, $number)) {
+						continue;
+					}
+					
+					$locations = $this->getMissingLocation($squareNumber,$number);
+					if ($locations['missing'] === false) {
+						$row = current($locations['rows']);
+						$col = current($locations['cols']);
+						$girdNumbers = $this->getGirdLocationForWordLocation($squareNumber, $row, $col);
+						$this->insertNumber($girdNumbers['rows'], $girdNumbers['cols'], $number);
+						$insert = true;
+					} else {
+						$canBe = $this->checkIfNumberCanOnlyBeInOnePlaceInSquare($number, $squareNumber,$locations);
+						if ($canBe !== false) {
+							extract($canBe);
+							$this->insertNumber($row, $col, $number);
+							$insert = true;
+						}
+					}
+				}
+			}
+			if ($insert === false) {
+				print $this;
+				print "Round ".$rounds.PHP_EOL;
+			}
+ 		} while (!$this->isSolved() && $insert !== false);
+	}
+	
+	public function __toString()
+	{
+		$value = PHP_EOL;
+		$rowCount = 0;
+		foreach ($this->_puzzle as $row) {
+			$rowCount++;
+			$colCount = 0;
+			foreach($row as $col) {
+				$colCount++;
+				$value .= ($col === NULL) ? 'x' : $col;
+				if (($colCount % 3) === 0 && $colCount != 9) {
+					$value .= "|";
+				}
+			}
+			$value .= PHP_EOL;
+			if (($rowCount % 3) === 0 && $rowCount != 9) {
+				$value .= "---+---+---".PHP_EOL;
+			}
+		}
+		
+		return $value;
 	}
 }

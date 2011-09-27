@@ -78,6 +78,19 @@ class SolverTest extends PHPUnit_Framework_TestCase
 					);	
 	}
 	
+	protected function _getSolvedPuzzle()
+	{
+		return array(0 =>    array(5,2,7,    4,6,1,    2,8,9),
+						1 => array(4,1,6,    3,9,8,    7,3,5),
+						2 => array(8,9,3,    2,5,7,    6,1,4),
+						3 => array(7,3,9,    8,2,4 ,   5,6,1),
+						4 => array(2,4,1,    6,9,5 ,   8,7,3),// change to 3
+						5 => array(6,8,5,    1,3,5,    4,9,2),
+						6 => array(1,7,4,    3,8,2,    9,5,6),
+						7 => array(9,5,2,    7,4,6,    1,3,8),
+						8 => array(3,6,8  ,  5,1,9,    2,4,7)
+					);	
+	}
 	
 	public function testCheckRowInvalidRowGiven()
 	{	
@@ -529,11 +542,11 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$solver = new Solver($puzzle);
 		$location = $solver->getMissingLocation(7,4);
 		$this->assertTrue(is_array($location));
-		$this->assertEquals(2,sizeof($location));
+		$this->assertEquals(3,sizeof($location));
 		$this->assertArrayHasKey('cols', $location);
 		$this->assertArrayHasKey('rows', $location);
-		$this->assertEquals('right', $location['cols']);
-		$this->assertEquals('top', $location['rows']);
+		$this->assertEquals('right', current($location['cols']));
+		$this->assertEquals('top', current($location['rows']));
 	}
 	
 	public function testGetGirdLocationForWordLocationInvalidSquareNumber()
@@ -599,7 +612,7 @@ class SolverTest extends PHPUnit_Framework_TestCase
 	
 	public function testInsertNumberNumberInRow()
 	{
-		$this->setExpectedException("NumberAlreadyExists", "Number already exists in row");
+		$this->setExpectedException("NumberAlreadyExists", "Number 8 already exists in row 1");
 		$puzzle = $this->_getPuzzle();
 		$solver = new Solver($puzzle);
 		$solver->insertNumber(1,1,8);
@@ -607,7 +620,7 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		
 	public function testInsertNumberNumberInCol()
 	{
-		$this->setExpectedException("NumberAlreadyExists", "Number already exists in col");
+		$this->setExpectedException("NumberAlreadyExists", "Number 9 already exists in col 1");
 		$puzzle = $this->_getPuzzle();
 		$solver = new Solver($puzzle);
 		$solver->insertNumber(1,1,9);
@@ -615,7 +628,7 @@ class SolverTest extends PHPUnit_Framework_TestCase
 	
 	public function testInsertNumberNumberInSquare()
 	{
-		$this->setExpectedException("NumberAlreadyExists", "Number already exists in square");
+		$this->setExpectedException("NumberAlreadyExists", "Number 3 already exists in square 1");
 		$puzzle = $this->_getPuzzle();
 		$solver = new Solver($puzzle);
 		$solver->insertNumber(1,1,3);
@@ -659,5 +672,62 @@ class SolverTest extends PHPUnit_Framework_TestCase
 		$solver = new Solver($puzzle);
 		$this->assertTrue($solver->squareHasNumber(1, 2));
 		$this->assertfalse($solver->squareHasNumber(1, 1));
+	}
+	
+	public function testIsSolvedFalse()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);	
+		$this->assertfalse($solver->isSolved());
+	}
+
+	
+	public function testSolve()
+	{
+		$puzzle = $this->_getPuzzle();
+		$solver = new Solver($puzzle);	
+		$solver->solve();
+		$this->assertTrue($solver->isSolved());
+		
+		$solver = new Solver( array(
+								array(4,9,null,null,null,7,null,null,3),
+								array(8,null,1,null,null,null,null,null,null),
+								array(null,null,3,null,null,1,2,9,4),
+								array(7,null,null,null,null,null,3,null,1),
+								array(null,6,null,3,null,5,null,4,null),
+								array(3,null,4,null,null,null,null,null,5),
+								array(5,3,6,1,null,null,7,null,null),
+								array(null,null,null,null,null,null,4,null,9),
+								array(9,null,null,8,null,null,null,3,6)
+								));
+		
+		$solver->solve();
+		$this->assertTrue($solver->isSolved());
+		
+		$solver = new Solver(array(
+			array(2,null,null,4,null,8,null,null,null),
+			array(null,null,null,null,9,null,null,8,null),
+			array(8,null,9,null,null,1,3,null,null),
+			 array(null,null,5,null,null,null,null,7,9),
+			array(6,null,null,null,4,null,null,null,5),
+			array(4,2,null,null,null,null,8,null,null),
+			array(null,null,6,1,null,null,9,null,7),
+			array(null,3,null,null,2,null,null,null,null),
+			array(null,null,null,6,null,5,null,null,3)
+			));
+		$solver->solve();
+		$this->assertTrue($solver->isSolved());
+		
+		$solver = new Solver(array(array(null,null,null,5,8,null,9,null,null),
+								   array(null,4,1,null,7,null,8,null,null),
+								   array(null,null,null,6,null,null,null,2,null),
+								   array(null,3,null,null,null,null,2,null,null),
+								   array(2,null,5,null,null,null,4,null,9),
+								   array(null,null,6,null,null,null,null,8,null),
+								   array(null,7,null,null,null,2,null,null,null),
+								   array(null,null,3,null,9,null,7,1,null),
+								   array(null,null,9,null,4,5,null,null,null)));
+		$solver->solve();
+		$this->assertTrue($solver->isSolved());
 	}
 }
