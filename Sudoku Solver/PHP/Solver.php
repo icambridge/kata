@@ -1,5 +1,5 @@
 <?php
-
+// Note WIP, I've learned that my current knowledge of solving Sudoku puzzles sucks, so need to (re)learn the more advanced techinques.
 require_once '../Exceptions.php';
 
 class Solver
