@@ -8,6 +8,7 @@ $numbers = [
     4 => 5,
     5 => 6,
     6 => 7,
+    7 => 8,
     8 => 9,
     9 => 10,
     10 => 11,
@@ -24,16 +25,17 @@ $numbers = [
  */
 function binarySearch(array $haystack, $needle, $startPoint = 0, $endPoint = -1)
 {
-    if (sizeof($haystack) == 1) {
-        $item = current($haystack);
-        return ($item == $needle) ? $item : null;
-    }
     
     if ($endPoint === -1) {
         $endPoint = sizeof($haystack) -1;
     }
 
     $diff =  $endPoint - $startPoint;
+    
+    if ($diff <= 0) {
+        return null;
+    }
+    
     $jump = (int) floor($diff / 2);
     $searchKey = $startPoint +  $jump;
     $item = $haystack[$searchKey];
@@ -48,4 +50,4 @@ function binarySearch(array $haystack, $needle, $startPoint = 0, $endPoint = -1)
 }
 
 var_dump(binarySearch($numbers, 4));
-var_dump(binarySearch($numbers, 10));
+var_dump(binarySearch($numbers, 100));
