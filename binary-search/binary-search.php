@@ -24,6 +24,11 @@ $numbers = [
  */
 function binarySearch(array $haystack, $needle, $startPoint = 0, $endPoint = -1)
 {
+    if (sizeof($haystack) == 1) {
+        $item = current($haystack);
+        return ($item == $needle) ? $item : null;
+    }
+    
     if ($endPoint === -1) {
         $endPoint = sizeof($haystack) -1;
     }
@@ -43,3 +48,4 @@ function binarySearch(array $haystack, $needle, $startPoint = 0, $endPoint = -1)
 }
 
 var_dump(binarySearch($numbers, 4));
+var_dump(binarySearch($numbers, 10));
